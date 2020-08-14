@@ -1,6 +1,25 @@
+import random, string
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
+class Stack():
+    def __init__(self):
+        self.stack = []
+    def push(self, value):
+        self.stack.append(value)
+    def pop(self):
+        if self.size() > 0:
+            return self.stack.pop()
+        else:
+            return None
+    def size(self):
+        return len(self.stack)
+
+
+
 
 class SocialGraph:
     def __init__(self):
@@ -45,8 +64,18 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        for e in range(num_users):
+            self.add_user(e+1)
 
         # Create friendships
+        for e in range(num_users):
+            others = [x for x in range(num_users)]
+            others.pop(e)
+            for k in range(avg_friendships-1):
+                friend = random.choice(others)
+                others.remove(friend)
+                self.add_friendship(e+1, friend+1)
+
 
     def get_all_social_paths(self, user_id):
         """
@@ -59,6 +88,30 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        for u in self.users:
+            if u != user_id:
+                s = Stack()
+                s.push((user_id,))
+                explored = set()
+
+                while s.size() > 0:
+                    v = s.pop()
+                    cur = v[len(v)-1]
+
+                    if cur == u:
+                        if u in visited:
+                            if len(v) < len(visited[u]):
+                                visited[u] = v
+                        else:
+                            visited[u] = v
+                        
+                    elif cur not in explored:
+                        explored.add(cur)
+                        for next_vertex in self.friendships[cur]:
+                            copy = list(v)
+                            copy.append(next_vertex)
+                            s.push(copy)
+
         return visited
 
 
